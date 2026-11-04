@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../theme/cogitator_theme.dart';
 import '../services/cogitator_api.dart';
 import '../services/audio_vox_service.dart';
@@ -22,10 +21,8 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
   final List<String> _consoleLogs = [];
   final AudioVoxService _voxService = AudioVoxService();
 
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
   int _xp = 1420;
-  String _rank = "Enginseer Prime";
+  final String _rank = "Enginseer Prime";
 
   double _water = 2.0;
   double _protein = 120.0;
@@ -34,9 +31,8 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
     _appendLog("ADEPTUS MECHANICUS COGITATOR ONLINE.");
-    _appendLog("LITURGIES LOADED. ENGAGE COMMUNION PROTOCOLS.");
+    _appendLog("NATIVE INTERFACE READY. ENGAGE COMMUNION PROTOCOLS.");
   }
 
   void _appendLog(String text) {
@@ -50,32 +46,11 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
     });
   }
 
-  Future<void> _handleVoxInput() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize();
-      if (available) {
-        setState(() => _isListening = true);
-        _voxService.playStaticBurst();
-        _speech.listen(onResult: (result) {
-          setState(() {
-            _inputController.text = result.recognizedWords;
-          });
-          if (result.finalResult) {
-            setState(() => _isListening = false);
-            _processCommand(_inputController.text);
-            _inputController.clear();
-          }
-        });
-      }
-    } else {
-      setState(() => _isListening = false);
-      _speech.stop();
-    }
-  }
-
   void _processCommand(String cmd) async {
     final lower = cmd.toLowerCase().trim();
-    _appendLog("VOX IN: \"$cmd\"");
+    if (lower.isEmpty) return;
+    
+    _appendLog("INPUT: \"$cmd\"");
     _voxService.playChime();
 
     if (lower.contains("muster") || lower.contains("agenda") || lower.contains("calendar")) {
@@ -87,23 +62,23 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
           _appendLog("ZERO MUSTERS SCHEDULED FOR ACTIVE CYCLE.");
         } else {
           for (var m in musters) {
-            _appendLog("MUSTER: [\${m['start']}-\${m['end']}] \${m['title']}");
+            _appendLog("MUSTER: [${m['start']}-${m['end']}] ${m['title']}");
           }
         }
       } catch (e) {
-        _appendLog("ERROR COMMUNICATING WITH CHRONO-VAULT: \$e");
+        _appendLog("ERROR COMMUNICATING WITH CHRONO-VAULT: $e");
       }
       return;
     }
 
     if (lower.startsWith("add task") || lower.startsWith("remind me to")) {
       final taskTitle = cmd.replaceFirst(RegExp(r'(add task|remind me to)', caseSensitive: false), '').trim();
-      _appendLog("ENGRAVING TASK: \"$taskTitle\"... ");
+      _appendLog("ENGRAVING TASK: \"$taskTitle\"...");
       try {
         await widget.apiClient.addDirective(taskTitle);
         _appendLog("DIRECTIVE SUCCESSFULLY ENGRAVED IN TASKS REGISTRY.");
       } catch (e) {
-        _appendLog("TRANSMISSION ERROR: \$e");
+        _appendLog("TRANSMISSION ERROR: $e");
       }
       return;
     }
@@ -125,13 +100,13 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
           protein: _protein,
           kineticMinutes: _kinetic,
           stasisHours: 7.5,
-          notes: "Vocal telemetry input",
+          notes: "Manual telemetry input",
         );
         final xp = res['result']['harvestedXP'];
         setState(() => _xp += (xp as num).toInt());
-        _appendLog("TELEMETRY ENGRAVED. +\$xp XP HARVESTED.");
+        _appendLog("TELEMETRY ENGRAVED. +$xp XP HARVESTED.");
       } catch (e) {
-        _appendLog("REPOSIT ERROR: \$e");
+        _appendLog("REPOSIT ERROR: $e");
       }
       return;
     }
@@ -159,17 +134,17 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
                   MechanicalDialGauge(
                     label: "HYDRATION",
                     value: _water / 4.0,
-                    readout: "\${_water.toStringAsFixed(1)}L",
+                    readout: "${_water.toStringAsFixed(1)}L",
                   ),
                   MechanicalDialGauge(
                     label: "MASS FUEL",
                     value: _protein / 200.0,
-                    readout: "\${_protein.toInt()}g",
+                    readout: "${_protein.toInt()}g",
                   ),
                   MechanicalDialGauge(
                     label: "KINETIC",
                     value: _kinetic / 90.0,
-                    readout: "\${_kinetic}m",
+                    readout: "${_kinetic}m",
                   ),
                 ],
               ),
@@ -203,38 +178,27 @@ class _CogitatorTerminalScreenState extends State<CogitatorTerminalScreen> {
                 ),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        _isListening ? Icons.mic_off : Icons.mic,
-                        color: _isListening ? CogitatorTheme.rustRed : CogitatorTheme.crtGreen,
-                      ),
-                      onPressed: _handleVoxInput,
-                    ),
                     Expanded(
                       child: TextField(
                         controller: _inputController,
                         style: CogitatorTheme.terminalText,
                         cursorColor: CogitatorTheme.crtGreen,
                         decoration: InputDecoration(
-                          hintText: "Enter sacred liturgy or query...",
+                          hintText: "Transmit liturgy or query...",
                           hintStyle: CogitatorTheme.terminalText.copyWith(color: CogitatorTheme.crtGreenDim),
                           border: InputBorder.none,
                         ),
                         onSubmitted: (val) {
-                          if (val.trim().isNotEmpty) {
-                            _processCommand(val);
-                            _inputController.clear();
-                          }
+                          _processCommand(val);
+                          _inputController.clear();
                         },
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.send, color: CogitatorTheme.sanctifiedGold),
                       onPressed: () {
-                        if (_inputController.text.trim().isNotEmpty) {
-                          _processCommand(_inputController.text);
-                          _inputController.clear();
-                        }
+                        _processCommand(_inputController.text);
+                        _inputController.clear();
                       },
                     ),
                   ],
