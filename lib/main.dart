@@ -6,7 +6,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
   // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL (ending in /exec) HERE
-  const String deployedAppsScriptUrl = "https://script.google.com/macros/s/AKfycbz_REPLACE_WITH_REAL_HEX_DEPLOYMENT/exec";
+  const String deployedAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyeX_w1D_RTZQ_A99Yw4yHIcahuN6fqLGXxIInaavHJXt_Pra4SzaQ6Mx3G-oQigwEb/exec";
 
   final apiClient = CogitatorApiClient(webhookEndpoint: deployedAppsScriptUrl);
 
