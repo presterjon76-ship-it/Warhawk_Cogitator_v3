@@ -1,4 +1,3 @@
-```groovy
 allprojects {
     repositories {
         google()
@@ -11,7 +10,6 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 
-// Force all plugin subprojects (including speech_to_text) to use SDK 34
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
