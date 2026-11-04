@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CogitatorTheme {
   static const Color crtGreen = Color(0xFF33FF33);
@@ -11,23 +10,26 @@ class CogitatorTheme {
   static const Color voidDark = Color(0xFF080C08);
   static const Color terminalBorder = Color(0xFF264026);
 
-  static TextStyle get terminalText => GoogleFonts.shareTechMono(
+  static TextStyle get terminalText => const TextStyle(
+    fontFamily: 'monospace',
     color: crtGreen,
     fontSize: 14.0,
     letterSpacing: 1.2,
-    shadows: const [
+    shadows: [
       Shadow(blurRadius: 4.0, color: crtGreen, offset: Offset(0, 0)),
     ],
   );
 
-  static TextStyle get terminalHeader => GoogleFonts.cinzel(
+  static TextStyle get terminalHeader => const TextStyle(
+    fontFamily: 'serif',
     color: sanctifiedGold,
     fontSize: 16.0,
     fontWeight: FontWeight.bold,
     letterSpacing: 2.0,
   );
 
-  static TextStyle get terminalAlert => GoogleFonts.shareTechMono(
+  static TextStyle get terminalAlert => const TextStyle(
+    fontFamily: 'monospace',
     color: crtAmber,
     fontSize: 14.0,
     fontWeight: FontWeight.bold,
