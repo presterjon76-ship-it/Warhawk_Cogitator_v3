@@ -1,3 +1,4 @@
+```groovy
 allprojects {
     repositories {
         google()
@@ -9,6 +10,18 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Force all plugin subprojects (including speech_to_text) to use SDK 34
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileSdkVersion 34
+            }
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
