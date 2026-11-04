@@ -18,6 +18,19 @@ subprojects { subproject ->
             }
         }
     }
+    
+    // Resolve duplicate runtime classpath collisions
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.core:core:1.13.1'
+            force 'androidx.core:core-ktx:1.13.1'
+            force 'androidx.fragment:fragment:1.7.1'
+            force 'androidx.activity:activity:1.8.1'
+            force 'androidx.window:window:1.2.0'
+            force 'androidx.window:window-java:1.2.0'
+            force 'androidx.annotation:annotation:1.8.0'
+        }
+    }
 }
 
 subprojects {
