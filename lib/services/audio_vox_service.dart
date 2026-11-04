@@ -1,21 +1,15 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart';
 
 class AudioVoxService {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
   Future<void> playChime() async {
-    try {
-      await _audioPlayer.play(AssetSource('audio/cogitator_beep.mp3'));
-    } catch (_) {}
+    // Uses native Android system sound click/chime without third-party libraries
+    await SystemSound.play(SystemSoundType.click);
+    await HapticFeedback.mediumImpact();
   }
 
   Future<void> playStaticBurst() async {
-    try {
-      await _audioPlayer.play(AssetSource('audio/vox_static.mp3'));
-    } catch (_) {}
+    await HapticFeedback.heavyImpact();
   }
 
-  void dispose() {
-    _audioPlayer.dispose();
-  }
+  void dispose() {}
 }
